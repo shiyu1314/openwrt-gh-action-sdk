@@ -55,7 +55,6 @@ endgroup
 group "feeds update -a"
 ./scripts/feeds update -a
 feeds_version=$(cat feeds.conf | head -1 | awk -Fopenwrt- '{print $2}')
-rm -rf feeds/packages/lang/node
 rm -rf feeds/luci/applications/luci-app-dockerman
 # aria2 & ariaNG
 rm -rf feeds/packages/net/ariang
@@ -67,7 +66,6 @@ rm -rf feeds/packages/net/alist feeds/luci/applications/luci-app-alist
 git clone https://github.com/sbwml/openwrt-alist package/new/alist
 sed -i "s/Basic Setting/Basic Settings/" package/new/alist/luci-app-alist/po/zh_Hans/alist.po
 git clone https://github.com/sbwml/feeds_packages_net_aria2 -b 22.03 feeds/packages/net/aria2
-git clone https://github.com/sbwml/feeds_packages_lang_node-prebuilt -b packages-$feeds_version feeds/packages/lang/node
 rm -rf feeds/packages/lang/golang
 git clone https://github.com/sbwml/packages_lang_golang -b 23.x feeds/packages/lang/golang
 sed -i 's/CPU_CFLAGS = -Os -pipe/CPU_CFLAGS = -O3 -mtune=generic -pipe/g' include/target.mk
