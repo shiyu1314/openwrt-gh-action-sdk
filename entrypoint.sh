@@ -54,7 +54,6 @@ endgroup
 
 group "feeds update -a"
 ./scripts/feeds update -a
-feeds_version=$(cat feeds.conf | head -1 | awk -Fopenwrt- '{print $2}')
 rm -rf feeds/luci/applications/luci-app-dockerman
 # aria2 & ariaNG
 rm -rf feeds/packages/net/ariang
@@ -68,7 +67,7 @@ sed -i "s/Basic Setting/Basic Settings/" package/new/alist/luci-app-alist/po/zh_
 git clone https://github.com/sbwml/feeds_packages_net_aria2 -b 22.03 feeds/packages/net/aria2
 rm -rf feeds/packages/lang/golang
 git clone https://github.com/sbwml/packages_lang_golang -b 23.x feeds/packages/lang/golang
-sed -i 's/CPU_CFLAGS = -Os -pipe/CPU_CFLAGS = -O3 -mtune=generic -pipe/g' include/target.mk
+./scripts/feeds update -a
 endgroup
 
 group "make defconfig"
@@ -121,6 +120,14 @@ else
 		if [ "$RET" -ne 0 ]; then
 			echo_red   "=> Package check failed: $RET)"
 			exit "$RET"
+		fi
+
+		badhash_msg="HASH does not match "
+		badhash_msg+="|HASH uses deprecated hash,"
+		badhash_msg+="|HASH is missing,"
+		if grep -qE "$badhash_msg" logtmp; then
+			echo "Package HASH check failed"
+			exit 1
 		fi
 
 		PATCHES_DIR=$(find /feed -path "*/$PKG/patches")
